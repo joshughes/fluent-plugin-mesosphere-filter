@@ -31,6 +31,8 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'fluent/test'
 require 'webmock/test_unit'
+WebMock.disable_net_connect!(:allow => "codeclimate.com")
+
 if ENV.has_key?('VERBOSE')
   $log = Fluent::Log.new(Fluent::Test::DummyLogDevice.new, Fluent::Log::LEVEL_TRACE)
 else
