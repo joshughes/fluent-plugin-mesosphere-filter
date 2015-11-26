@@ -118,8 +118,8 @@
     "StdinOnce": false,
     "Env": [
       "FLUENTD_OPT=-vv",
-      "MESOS_TASK_ID=my-innovation-health-int-provider.14b0596d-93ea-11e5-a134-124eefe69197",
-      "MARATHON_APP_ID=/my-innovation-health-int-provider",
+      "MESOS_TASK_ID=hello-world.14b0596d-93ea-11e5-a134-124eefe69197",
+      "MARATHON_APP_ID=/hello-world",
       "FLUENTD_CONF=test.conf",
       "PATH=/home/ubuntu/ruby/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
       "FLUENTD_OPT="

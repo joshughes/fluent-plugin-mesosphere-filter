@@ -27,7 +27,7 @@ module Fluent
     config_param :merge_json_log, :bool, default: true
     config_param :cronos_task_regex,
                  :string,
-                 default: '(?<app>[a-z0-9]([-a-z0-9]*[a-z0-9]))-(?<date>[^-]+)-(?<time>[^-]+)-(?<task_type>[^-]+)-(?<run>[^-]+)-(?<epoc>[^-]+)'
+                 default: '(?<app>[a-z0-9]([-a-z0-9_]*[a-z0-9_]))-(?<date>[^-]+)-(?<time>[^-]+)-(?<task_type>[^-]+)-(?<run>[^-]+)-(?<epoc>[^-]+)'
 
     def initialize
       super
@@ -47,7 +47,7 @@ module Fluent
 
       @chronos_task_regex_compiled = Regexp.compile(@cronos_task_regex)
 
-      marathon_regex = '\/(?<app>[a-z0-9]([-a-z0-9]*[a-z0-9]))'
+      marathon_regex = '\/(?<app>[a-z0-9]([-a-z0-9_]*[a-z0-9_]))'
       @marathon_app_regex_compiled = Regexp.compile(marathon_regex)
     end
 
@@ -89,12 +89,12 @@ module Fluent
           elsif env.include? 'MARATHON_APP_ID'
             match_data = parse_env(env).match(@marathon_app_regex_compiled)
             task_data['mesos_framework'] = 'marathon'
-            task_data['app'] = match_data['app']
+            task_data['app'] = match_data['app'] if match_data
           elsif env.include? 'CHRONOS_JOB_NAME'
             match_data = parse_env(env).match(@chronos_task_regex_compiled)
             task_data['mesos_framework'] = 'chronos'
-            task_data['app'] = match_data['app']
-            task_data['chronos_task_type'] = match_data['task_type']
+            task_data['app'] = match_data['app'] if match_data
+            task_data['chronos_task_type'] = match_data['task_type'] if match_data
           end
         end
       end

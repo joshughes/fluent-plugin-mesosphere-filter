@@ -52,12 +52,12 @@ class AmplifierFilterTest < Test::Unit::TestCase
     end
     filtered = d1.filtered_as_array
 
-    task_id = 'my-innovation-health-int-provider.14b0596d-93ea-11e5-a134-124eefe69197'
+    task_id = 'hello-world.14b0596d-93ea-11e5-a134-124eefe69197'
 
     log_entry = filtered[0][2]
 
     assert_equal 'marathon', log_entry['mesos_framework']
-    assert_equal 'my-innovation-health-int-provider', log_entry['app']
+    assert_equal 'hello-world', log_entry['app']
     assert_equal task_id, log_entry['mesos_task_id']
   end
 
@@ -113,6 +113,26 @@ class AmplifierFilterTest < Test::Unit::TestCase
     assert_equal 'some-task-app2', log_entry['app']
     assert_equal task_id, log_entry['mesos_task_id']
     assert_equal 'deployTasks', log_entry['chronos_task_type']
+  end
+
+  def test_chronos_bad_match
+    docker_api_url = 'http://tcp//example.com:5422/v1.16/containers/foobar124/json'
+    file = File.open('test/containers/chronos_bad.json', 'rb')
+    setup_docker_stub(file, docker_api_url)
+
+    d1 = create_driver(CONFIG, 'docker.foobar124')
+    d1.run do
+      d1.filter('log' => 'Hello World 1')
+    end
+    filtered = d1.filtered_as_array
+
+    task_id = 'ct:1448508194000:0:recurring-transaction3:task'
+    log_entry = filtered[0][2]
+
+    assert_equal 'chronos', log_entry['mesos_framework']
+    assert_equal task_id, log_entry['mesos_task_id']
+    refute log_entry['app']
+    refute log_entry['chronos_task_type']
   end
 
   def test_merge_json
