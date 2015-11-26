@@ -4,9 +4,9 @@
 [![Gem Version](https://badge.fury.io/rb/fluent-plugin-mesosphere-filter.svg)](https://badge.fury.io/rb/fluent-plugin-mesosphere-filter)
 [![Inline docs](http://inch-ci.org/github/joshughes/fluent-plugin-mesosphere-filter.svg?branch=master)](http://inch-ci.org/github/joshughes/fluent-plugin-mesosphere-filter)
 
-Marathon, Chronos and Mesos combined can allow for teams to build a great solution for deploying and scaling containers. The issue is when you have a system like Kibana it can be hard to identify what container or task a log is coming from. 
+Marathon, Chronos and Mesos combined can allow for teams to build a great solution for deploying and scaling containers. The issue is when you have a system like Kibana it can be hard to identify what container or task a log is coming from.
 
-This filter aims to solve that issue by inspecting containers to inject Mesosphere metatdata into the Fluentd event stream. 
+This filter aims to solve that issue by inspecting containers to inject Mesosphere metatdata into the Fluentd event stream.
 
 ##What gets injected?
 ###Marathon
@@ -18,13 +18,13 @@ This filter aims to solve that issue by inspecting containers to inject Mesosphe
 | `mesos_task_id` | The unique Mesos task id running the docker container |
 
 ###Chronos
-Chronos does not have the idea of an 'application'. Just jobs. We run a lot of jobs that relate to our applications so we use a naming scheme that allows us to extract the marathon application that is running the Chronos task. 
+Chronos does not have the idea of an 'application'. Just jobs. We run a lot of jobs that relate to our applications so we use a naming scheme that allows us to extract the marathon application that is running the Chronos task.
 
-An example of a Chronos Job name is the following. 
+An example of a Chronos Job name is the following.
 
 `some-task-app2-11182015-1718-deployTasks-1-144786721`
 
-With the default regex in the plugin we extract the following data and inject it into the event stream. 
+With the default regex in the plugin we extract the following data and inject it into the event stream.
 
 |`key`|  Description  | Value |
 |---|---|---|
@@ -35,7 +35,7 @@ With the default regex in the plugin we extract the following data and inject it
 
 ##Configuration
 
-If your using the docker fluentd logging plugin your configuration should look something like this. 
+If your using the docker fluentd logging plugin your configuration should look something like this.
 
 ```
 <source>
@@ -66,7 +66,7 @@ If your using the docker fluentd logging plugin your configuration should look s
 
 
 ##Example
-We have an application called `hello-world`. That application is deployed via marathon and has the following environment variables. 
+We have an application called `hello-world`. That application is deployed via marathon and has the following environment variables.
 
 |`key`|  value  |
 |---|---|
@@ -79,7 +79,7 @@ Like all great hello world applications. This docker container just execute:
 echo '{"say":"Hello World"}'
 ```
 
-Without this filter fluentd would process the docker log and output the following. 
+Without this filter fluentd would process the docker log and output the following.
 
 ```json
 {
@@ -90,7 +90,7 @@ Without this filter fluentd would process the docker log and output the followin
 }
 ```
 
-With the filter in place that log will become the following. 
+With the filter in place that log will become the following.
 
 ```json
 {
@@ -98,11 +98,11 @@ With the filter in place that log will become the following.
 	"container_name": "/some_random_meaningless_name",
 	"say": "Hello World",
 	"mesos_framework": "marathon",
-	"app": "hello-world'
+	"app": "hello-world",
 	"mesos_task_id": "unquie_task_id",
 	"source": "stdout",
 	"log": "{\"say\":\"Hello World\"}\r"
 }
 ```
 
-So now in Kibana you can filter on many more fields and more easily track down issues when `hello-world` may be running in multiple containers that are associated with different Mesos tasks. 
+So now in Kibana you can filter on many more fields and more easily track down issues when `hello-world` may be running in multiple containers that are associated with different Mesos tasks.
