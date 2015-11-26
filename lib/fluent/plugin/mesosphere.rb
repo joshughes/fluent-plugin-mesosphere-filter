@@ -48,7 +48,8 @@ module Fluent
       @chronos_task_regex_compiled = Regexp.compile(@cronos_task_regex)
     end
 
-    # Gets the log event stream and moifies it
+    # Gets the log event stream and moifies it. This is where the plugin hooks
+    # into the fluentd envent stream.
     def filter_stream(tag, es)
       new_es = MultiEventStream.new
 
@@ -69,6 +70,9 @@ module Fluent
     # Goes out to docker to get environment variables for a container.
     # Then we parse the environment varibles looking for known Marathon
     # and Chronos environment variables
+    #
+    # ==== Attributes
+    # * +id+ - The id of the container to look at for mesosphere metadata.
     def get_container_metadata(id)
       task_data = {}
       container = Docker::Container.get(id)
@@ -94,12 +98,23 @@ module Fluent
     end
 
     # Split the env var on = and return the value
+    # ==== Attributes
+    # * +env+ - The docker environment variable to parse to get the value.
+    # ==== Examples
+    # # For the env value MARATHON_APP_ID the actual string value given to us
+    # # by docker is 'MARATHON_APP_ID=some-app'. We want to return 'some-app'.
     def parse_env(env)
       env.split('=').last
     end
 
     # Look at the log value and if it is valid json then we will parse the json
     # and merge it into the log record.
+    # ==== Attributes
+    # * +record+ - The record we are transforming in the fluentd event stream.
+    # ==== Examples
+    # # Docker captures stdout and passes it in the 'log' record attribute.
+    # # We try to discover is the value of 'log' is json, if it is then we
+    # # will parse the json and add the keys and values to the record.
     def merge_json_log(record)
       if record.has_key?('log')
         log = record['log'].strip
