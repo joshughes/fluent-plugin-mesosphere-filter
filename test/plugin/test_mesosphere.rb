@@ -57,7 +57,7 @@ class AmplifierFilterTest < Test::Unit::TestCase
     log_entry = filtered[0][2]
 
     assert_equal 'marathon', log_entry['mesos_framework']
-    assert_equal '/my-innovation-health-int-provider', log_entry['app']
+    assert_equal 'my-innovation-health-int-provider', log_entry['app']
     assert_equal task_id, log_entry['mesos_task_id']
   end
 

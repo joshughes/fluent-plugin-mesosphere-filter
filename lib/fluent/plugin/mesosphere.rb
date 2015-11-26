@@ -46,6 +46,9 @@ module Fluent
       @cache = LruRedux::TTL::ThreadSafeCache.new(@cache_size, @cache_ttl)
 
       @chronos_task_regex_compiled = Regexp.compile(@cronos_task_regex)
+
+      marathon_regex = '\/(?<app>[a-z0-9]([-a-z0-9]*[a-z0-9]))'
+      @marathon_app_regex_compiled = Regexp.compile(marathon_regex)
     end
 
     # Gets the log event stream and moifies it. This is where the plugin hooks
@@ -84,8 +87,9 @@ module Fluent
           if env =~ /MESOS_TASK_ID/i
             task_data['mesos_task_id'] = parse_env(env)
           elsif env.include? 'MARATHON_APP_ID'
+            match_data = parse_env(env).match(@marathon_app_regex_compiled)
             task_data['mesos_framework'] = 'marathon'
-            task_data['app'] = parse_env(env)
+            task_data['app'] = match_data['app']
           elsif env.include? 'CHRONOS_JOB_NAME'
             match_data = parse_env(env).match(@chronos_task_regex_compiled)
             task_data['mesos_framework'] = 'chronos'
