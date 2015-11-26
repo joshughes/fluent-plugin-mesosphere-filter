@@ -1,6 +1,15 @@
 language: ruby
 rvm:
-  - 2.1.7
+- 2.1.7
 addons:
   code_climate:
-    repo_token: 4fcce21c947c39af626d6dbee525550cad45ec8148731512989627b4729391a2
+    repo_token:
+      secure: c45OF+vJNaBMUDi5Rr+LvLtIvkDmrhub4dlAgRhqPvxwVC7PsS71JUOMV/6ZAVRA5u/05sABGwJPXaQDN+BRD2kF34u1PjTeFo1nglyqgwERikyh3pXYTM46T2nnjo/FDyaO0QW4SOxsQM8TYYFB7YnzfO8YOKRt2jOFlW0++yQ7wVyOl8r8mkSzZ0e0VLbYhcz/pF2tyWvx+DXEH4dgUe0ZbSfYTFrOadsmAhD+T4ivuKzI/GqfL6lmxynReKzALvPzKSmIL+9eGbyAej/VB8H8o5v/H7zb5QWMO49q8qysuz8Phh160ABRncX6NGqlUUOjt+FY+fwW3FTKpdM2X3BRAAm6kk9qzpx6db5vb3ES2NPFjO/P/DJCfYf+7iDNhSescTTa76aKKXiqYCFlEISUGKCJy3lPwJc8PeMyBO05rElLHbjJ3/G+v/wsbOIaQ/B4vkxMGLVkNR4liW6jd5pgxNmYTHrbkSCtyL0wyMfKEsW9zXjQE+fmUQgjhr1xic/qv+2bEsiTDWr9wjN5JQTPxEM+27M1TMA/+1chBGCGe54eYrSA3sHgtSpCF9DJ1lHzfikSF09bs/nCaicNdbQp9ej3/5Qgxnw+F17rQ4eR9dWuGsUw1o15GjOErMbQGRULV+UwekzSpm+D8pEVwnbHY0VTYxUjb2bE2YONBQY=
+deploy:
+  provider: rubygems
+  api_key:
+    secure: sW92gLbqV2gnDMCzutJA9cZyoXj/1Z8uEjqWCxjehBbgWXLMJpfJ2JtUUXGaU2w01+hGrm10a1w5KfDJoRPa57bFfZ0TpRgF4mmBuxOTgfIRwMNoGDkgS4of0Z9nwZapEjwrF5ZVWdVph2qxVvJyMsxJ+F101VdvSminc79MhrZrO7h+jqivc68CsB8z/0R/16BHYryGcgdhHWMJ5qDeba4t+PQqwFIKRHhjmGKMjNIe3CufJh7NABvLJi8UFWLqeIpBu7xvJ0ihrD0VftDbJoEyXe15aEHmpGdj5M2LE/zXkKTvRIC5/SVx+zcB7jg+VXnFPwNi0Pcyrvme/lzykA4YxuB3os5tpDVgH1Y+DAsfHGEydFr+QJcHDvXjxGA9YlPt5kYKOb0OP12K8+wGOWdZCTmJYLC524Ed/XjgrqXEk1JFuLp+dix7YDQ4DNtfnElLuBGL5WdtxbqVIezcLpI2ZTIsvZdJp9PtPOtcT5FC/hd8PTU0A5nMFojrvdoi97OZQ7zjtmEUh06M4fGTDpWYth9qFLuwcXR12+ygQthSepKoKvkeXlS+1vZuk82RONYAoaJfcENApTsm1vpgr5uoYnoALIU8uSWpXr6pYvE4vJZx0KgY+fD9q3iAJsHhNrJCLJubvPCC+8QJPyml9Wl6bcD79MyH6C53ArtN0LY=
+  gem: fluent-plugin-mesosphere-filter
+  on:
+    repo: joshughes/fluent-plugin-mesosphere-filter
+    branch: master
