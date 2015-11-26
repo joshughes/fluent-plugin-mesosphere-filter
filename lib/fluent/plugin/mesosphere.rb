@@ -116,7 +116,7 @@ module Fluent
     # # We try to discover is the value of 'log' is json, if it is then we
     # # will parse the json and add the keys and values to the record.
     def merge_json_log(record)
-      if record.has_key?('log')
+      if record.key?('log')
         log = record['log'].strip
         if log[0].eql?('{') && log[-1].eql?('}')
           begin
