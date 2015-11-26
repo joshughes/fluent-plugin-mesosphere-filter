@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 module Fluent
+  # Parses Marathon and Chronos data from docker to make fluentd logs more
+  # useful.
   class MesosphereFilter < Fluent::Filter
     Fluent::Plugin.register_filter('mesosphere-filter', self)
 
@@ -31,6 +33,7 @@ module Fluent
       super
     end
 
+    # Get the configuration for the plugin
     def configure(conf)
       super
 
@@ -45,6 +48,7 @@ module Fluent
       @chronos_task_regex_compiled = Regexp.compile(@cronos_task_regex)
     end
 
+    # Gets the log event stream and moifies it
     def filter_stream(tag, es)
       new_es = MultiEventStream.new
 
@@ -62,12 +66,17 @@ module Fluent
       new_es
     end
 
+    # Goes out to docker to get environment variables for a container.
+    # Then we parse the environment varibles looking for known Marathon
+    # and Chronos environment variables
     def get_container_metadata(id)
       task_data = {}
       container = Docker::Container.get(id)
       if container
         environment = container.json['Config']['Env']
         environment.each do |env|
+          # Chronos puts task_id in lowercase, and Marathon does it with
+          # uppercase
           if env =~ /MESOS_TASK_ID/i
             task_data['mesos_task_id'] = parse_env(env)
           elsif env.include? 'MARATHON_APP_ID'
@@ -84,10 +93,13 @@ module Fluent
       task_data
     end
 
+    # Split the env var on = and return the value
     def parse_env(env)
       env.split('=').last
     end
 
+    # Look at the log value and if it is valid json then we will parse the json
+    # and merge it into the log record.
     def merge_json_log(record)
       if record.has_key?('log')
         log = record['log'].strip
