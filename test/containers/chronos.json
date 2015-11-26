@@ -1,0 +1,137 @@
+{
+  "AppArmorProfile": "",
+  "Args": [
+    " task",
+    "task"
+  ],
+  "Config": {
+    "AttachStderr": false,
+    "AttachStdin": false,
+    "AttachStdout": false,
+    "Cmd": [
+      " task",
+      "task"
+    ],
+    "CpuShares": 153,
+    "Cpuset": "",
+    "Domainname": "",
+    "Entrypoint": [
+      "/minimal"
+    ],
+    "Env": [
+      "mesos_task_id=ct:1448508194000:0:recurring-transaction2:task",
+      "CHRONOS_JOB_OWNER=chartreuse-team@itriagehealth.com",
+      "CHRONOS_JOB_NAME=some-task-app2-11182015-1718-deployTasks-1-1447867211",
+      "HOST=ip-10-10-30-60.ec2.internal",
+      "CHRONOS_RESOURCE_MEM=1024.0",
+      "CHRONOS_RESOURCE_CPU=0.05",
+      "CHRONOS_RESOURCE_DISK=256.0",
+      "YEAR=2016",
+      "VAULT_HOSTS=https://dev-use1a-pr-01-vault-vault-0001.dev-utopia.com:8200,https://dev-use1b-pr-01-vault-vault-0001.dev-utopia.com:8200,https://dev-use1e-pr-01-vault-vault-0001.dev-utopia.com:8200",
+      "MESOS_SANDBOX=/mnt/mesos/sandbox",
+      "PORT=80"
+    ],
+    "ExposedPorts": {
+      "80/tcp": {}
+    },
+    "Hostname": "ip-10-10-30-60",
+    "Image": "docker-dev.itriagehealth.com/utopia/recurring-transaction2-task:564a03fd52f1800005000003",
+    "Labels": {},
+    "MacAddress": "",
+    "Memory": 1107296256,
+    "MemorySwap": -1,
+    "NetworkDisabled": false,
+    "OnBuild": null,
+    "OpenStdin": false,
+    "PortSpecs": null,
+    "StdinOnce": false,
+    "Tty": false,
+    "User": "",
+    "Volumes": null,
+    "WorkingDir": "/"
+  },
+  "Created": "2015-11-26T03:23:15.958740506Z",
+  "Driver": "overlay",
+  "ExecDriver": "native-0.2",
+  "ExecIDs": null,
+  "HostConfig": {
+    "Binds": [
+      "/data/mesos-slave/slaves/20151115-193554-4078832138-5050-1872-S2/docker/links/2e3e0f5c-ac02-40a0-804b-b4c7736935b5:/mnt/mesos/sandbox"
+    ],
+    "CapAdd": null,
+    "CapDrop": null,
+    "CgroupParent": "",
+    "ContainerIDFile": "",
+    "CpuShares": 153,
+    "CpusetCpus": "",
+    "Devices": [],
+    "Dns": null,
+    "DnsSearch": null,
+    "ExtraHosts": null,
+    "IpcMode": "",
+    "Links": null,
+    "LogConfig": {
+      "Config": null,
+      "Type": "json-file"
+    },
+    "LxcConf": [],
+    "Memory": 1107296256,
+    "MemorySwap": -1,
+    "NetworkMode": "host",
+    "PidMode": "",
+    "PortBindings": {},
+    "Privileged": false,
+    "PublishAllPorts": false,
+    "ReadonlyRootfs": false,
+    "RestartPolicy": {
+      "MaximumRetryCount": 0,
+      "Name": "no"
+    },
+    "SecurityOpt": null,
+    "Ulimits": null,
+    "VolumesFrom": null
+  },
+  "HostnamePath": "/data/docker/containers/8dac46bdb4c099f8a12c12e06b104e9ca86b839e241b386bf3ddb537c9923642/hostname",
+  "HostsPath": "/data/docker/containers/8dac46bdb4c099f8a12c12e06b104e9ca86b839e241b386bf3ddb537c9923642/hosts",
+  "Id": "foobar124",
+  "Image": "dc41b56ccebd1433c6be3a92b838cc64c8c5f7088237a3da08a380cf43d6d6ac",
+  "LogPath": "/data/docker/containers/8dac46bdb4c099f8a12c12e06b104e9ca86b839e241b386bf3ddb537c9923642/8dac46bdb4c099f8a12c12e06b104e9ca86b839e241b386bf3ddb537c9923642-json.log",
+  "MountLabel": "",
+  "Name": "/mesos-2e3e0f5c-ac02-40a0-804b-b4c7736935b5",
+  "NetworkSettings": {
+    "Bridge": "",
+    "Gateway": "",
+    "GlobalIPv6Address": "",
+    "GlobalIPv6PrefixLen": 0,
+    "IPAddress": "",
+    "IPPrefixLen": 0,
+    "IPv6Gateway": "",
+    "LinkLocalIPv6Address": "",
+    "LinkLocalIPv6PrefixLen": 0,
+    "MacAddress": "",
+    "PortMapping": null,
+    "Ports": null
+  },
+  "Path": "/minimal",
+  "ProcessLabel": "",
+  "ResolvConfPath": "/data/docker/containers/8dac46bdb4c099f8a12c12e06b104e9ca86b839e241b386bf3ddb537c9923642/resolv.conf",
+  "RestartCount": 0,
+  "State": {
+    "Dead": false,
+    "Error": "",
+    "ExitCode": 0,
+    "FinishedAt": "2015-11-26T03:23:16.090077843Z",
+    "OOMKilled": false,
+    "Paused": false,
+    "Pid": 0,
+    "Restarting": false,
+    "Running": false,
+    "StartedAt": "2015-11-26T03:23:16.01885868Z"
+  },
+  "Volumes": {
+    "/mnt/mesos/sandbox": "/data/mesos-slave/slaves/20151115-193554-4078832138-5050-1872-S2/frameworks/20150821-174742-1460275722-5050-14777-0001/executors/ct:1448508194000:0:recurring-transaction2:task/runs/2e3e0f5c-ac02-40a0-804b-b4c7736935b5"
+  },
+  "VolumesRW": {
+    "/mnt/mesos/sandbox": true
+  }
+}

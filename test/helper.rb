@@ -1,65 +1,46 @@
-#
-# Fluentd Kubernetes Metadata Filter Plugin - Enrich Fluentd events with
-# Kubernetes metadata
-#
-# Copyright 2015 Red Hat, Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-require 'codeclimate-test-reporter'
-SimpleCov.start do
-  formatter SimpleCov::Formatter::MultiFormatter[
-    SimpleCov::Formatter::HTMLFormatter,
-    CodeClimate::TestReporter::Formatter
-  ]
+require "simplecov"
+SimpleCov.start
+require 'rubygems'
+require 'bundler'
+require 'docker'
+require 'timecop'
+begin
+  Bundler.setup(:default, :development)
+rescue Bundler::BundlerError => e
+  $stderr.puts e.message
+  $stderr.puts "Run `bundle install` to install missing gems"
+  exit e.status_code
+end
+require 'test/unit'
+require 'pry'
+
+
+require "simplecov"
+require "codeclimate-test-reporter"
+if ENV['CIRCLE_ARTIFACTS']
+  dir = File.join("..", "..", "..", ENV['CIRCLE_ARTIFACTS'], "coverage")
+  SimpleCov.coverage_dir(dir)
 end
 
-require 'rr'
-require 'test/unit'
-require 'test/unit/rr'
-require 'fileutils'
-require 'fluent/log'
+
+
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'fluent/test'
 require 'webmock/test_unit'
-require 'vcr'
-
-VCR.configure do |config|
-  config.cassette_library_dir = 'test/cassettes'
-  config.hook_into :webmock # or :fakeweb
-  config.ignore_hosts 'codeclimate.com'
+if ENV.has_key?('VERBOSE')
+  $log = Fluent::Log.new(Fluent::Test::DummyLogDevice.new, Fluent::Log::LEVEL_TRACE)
+else
+  nulllogger = Object.new
+  nulllogger.instance_eval {|obj|
+    def method_missing(method, *args)
+      # pass
+    end
+  }
+  $log = nulllogger
 end
+Docker.url = 'tcp://example.com:5422'
+require 'fluent/plugin/mesosphere'
 
-unless defined?(Test::Unit::AssertionFailedError)
-  class Test::Unit::AssertionFailedError < StandardError
-  end
+class Test::Unit::TestCase
 end
-
-def unused_port
-  s = TCPServer.open(0)
-  port = s.addr[1]
-  s.close
-  port
-end
-
-def ipv6_enabled?
-  require 'socket'
-
-  begin
-    TCPServer.open('::1', 0)
-    true
-  rescue
-    false
-  end
-end
-
-$log = Fluent::Log.new(Fluent::Test::DummyLogDevice.new, Fluent::Log::LEVEL_WARN)
