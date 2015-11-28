@@ -1,4 +1,4 @@
-#Mesospher Fluentd Filter
+#Mesosphere Fluentd Filter
 [![Code Climate](https://codeclimate.com/github/joshughes/fluent-plugin-mesosphere-filter/badges/gpa.svg)](https://codeclimate.com/github/joshughes/fluent-plugin-mesosphere-filter)
 [![Test Coverage](https://codeclimate.com/github/joshughes/fluent-plugin-mesosphere-filter/badges/coverage.svg)](https://codeclimate.com/github/joshughes/fluent-plugin-mesosphere-filter/coverage)
 [![Gem Version](https://badge.fury.io/rb/fluent-plugin-mesosphere-filter.svg)](https://badge.fury.io/rb/fluent-plugin-mesosphere-filter)
@@ -60,7 +60,7 @@ If your using the docker fluentd logging plugin your configuration should look s
 
 |`key`|  Description  | Default |
 |---|---|---|
-|`cache_size`|  This plugin will cache infromation from the docker daemon. This configuration determine how large that cache is. | 1000 |
+|`cache_size`|  This plugin will cache information from the docker daemon. This configuration determine how large that cache is. | 1000 |
 |  `cache_ttl ` |  How long to keep items in the cache. | 3600 |
 | `merge_json_log ` | If your application logs in a valid json format, this will merge that into the event stream. | true |
 | `cronos_task_regex ` | If you don't provide a valid regex here then you will only get the mesos_task id from until you create a standard chronos job name that is parseable by a ruby regex. | **See example above** |

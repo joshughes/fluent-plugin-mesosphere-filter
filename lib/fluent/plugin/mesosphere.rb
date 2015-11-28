@@ -57,19 +57,40 @@ module Fluent
     # into the fluentd envent stream.
     def filter_stream(tag, es)
       new_es = MultiEventStream.new
+      container_id = ''
+
+      container_id = get_container_id_from_tag(tag) if get_container_id_tag
 
       es.each do |time, record|
-        container_id = get_container_id(tag, record)
+        container_id =
+          get_container_id_from_record(record) if container_id.empty?
         next unless container_id
-        mesos_data = @cache.getset(container_id) do
-          get_container_metadata(container_id)
-        end
-        record = record.merge(mesos_data)
-        record = merge_json_log(record) if @merge_json_log
-        new_es.add(time, record)
+        new_es.add(time, modify_record(record, get_mesos_data(container_id)))
       end
-
       new_es
+    end
+
+    # Injects the meso framework data into the record and also merges
+    # the json log if that configuration is enabled.
+    #
+    # ==== Attributes
+    # * +record+ - The log record being processed
+    # * +mesos_data+ - The mesos data retrived from the docker container
+    def modify_record(record, mesos_data)
+      modified_record = record.merge(mesos_data)
+      modified_record = merge_json_log(modified_record) if @merge_json_log
+      modified_record
+    end
+
+    # Gets the mesos data about a container from the cache or calls the Docker
+    # api to retrieve the data about the container and store it in the cache.
+    #
+    # ==== Attributes
+    # * +container_id+ - The container_id where the log record originated from.
+    def get_mesos_data(container_id)
+      @cache.getset(container_id) do
+        get_container_metadata(container_id)
+      end
     end
 
     # Goes out to docker to get environment variables for a container.
@@ -109,13 +130,18 @@ module Fluent
     #
     # ==== Attributes
     # * +tag+ - The tag of the log being processed
+    def get_container_id_from_tag(tag)
+      tag.split('.').last
+    end
+
+    # If the user has configured container_id_attr the container id can be
+    # gathered from the record if it has been inserted there. If no container_id
+    # can be found, the record is not processed.
+    #
+    # ==== Attributes
     # * +record+ - The record that is being transformed by the filter
-    def get_container_id(tag, record)
-      if @get_container_id_tag
-        tag.split('.').last
-      else
-        record[@container_id_attr]
-      end
+    def get_container_id_from_record(record)
+      record[@container_id_attr]
     end
 
     # Split the env var on = and return the value
