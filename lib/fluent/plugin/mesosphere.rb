@@ -73,11 +73,11 @@ module Fluent
     # Injects the meso framework data into the record and also merges
     # the json log if that configuration is enabled.
     #
-    # ==== Attributes
+    # ==== Attributes:
     # * +record+ - The log record being processed
     # * +mesos_data+ - The mesos data retrived from the docker container
     #
-    # ==== Returns
+    # ==== Returns:
     # * A record hash that has mesos data and optinally log data added
     def modify_record(record, mesos_data)
       modified_record = record.merge(mesos_data)
@@ -88,9 +88,9 @@ module Fluent
     # Gets the mesos data about a container from the cache or calls the Docker
     # api to retrieve the data about the container and store it in the cache.
     #
-    # ==== Attributes
+    # ==== Attributes:
     # * +container_id+ - The container_id where the log record originated from.
-    # ==== Returns
+    # ==== Returns:
     # * A hash of data that describes a mesos task
     def get_mesos_data(container_id)
       @cache.getset(container_id) do
@@ -102,9 +102,9 @@ module Fluent
     # Then we parse the environment varibles looking for known Marathon
     # and Chronos environment variables
     #
-    # ==== Attributes
+    # ==== Attributes:
     # * +id+ - The id of the container to look at for mesosphere metadata.
-    # ==== Returns
+    # ==== Returns:
     # * A hash that describes a mesos task gathered from the Docker API
     def get_container_metadata(id)
       task_data = {}
@@ -135,9 +135,9 @@ module Fluent
     # configured container_id_attr the container id can be gathered from the
     # record if it has been inserted there.
     #
-    # ==== Attributes
+    # ==== Attributes:
     # * +tag+ - The tag of the log being processed
-    # ==== Returns
+    # ==== Returns:
     # * A docker container id
     def get_container_id_from_tag(tag)
       tag.split('.').last
@@ -147,21 +147,21 @@ module Fluent
     # gathered from the record if it has been inserted there. If no container_id
     # can be found, the record is not processed.
     #
-    # ==== Attributes
+    # ==== Attributes::
     # * +record+ - The record that is being transformed by the filter
-    # ==== Returns
+    # ==== Returns:
     # * A docker container id
     def get_container_id_from_record(record)
       record[@container_id_attr]
     end
 
     # Split the env var on = and return the value
-    # ==== Attributes
+    # ==== Attributes:
     # * +env+ - The docker environment variable to parse to get the value.
     # ==== Examples
     # # For the env value MARATHON_APP_ID the actual string value given to us
     # # by docker is 'MARATHON_APP_ID=some-app'. We want to return 'some-app'.
-    # ==== Returns
+    # ==== Returns:
     # * The value of an environment varaible
     def parse_env(env)
       env.split('=').last
@@ -169,13 +169,13 @@ module Fluent
 
     # Look at the log value and if it is valid json then we will parse the json
     # and merge it into the log record.
-    # ==== Attributes
+    # ==== Attributes:
     # * +record+ - The record we are transforming in the fluentd event stream.
     # ==== Examples
     # # Docker captures stdout and passes it in the 'log' record attribute.
     # # We try to discover is the value of 'log' is json, if it is then we
     # # will parse the json and add the keys and values to the record.
-    # ==== Returns
+    # ==== Returns:
     # * A record hash that has json log data merged into the record
     def merge_json_log(record)
       if record.key?('log')
