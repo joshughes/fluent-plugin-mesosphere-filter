@@ -21,6 +21,10 @@ class AmplifierFilterTest < Test::Unit::TestCase
     cache_size 2000
     cache_ttl 300
   ]
+  CONFIG3 = %[
+    get_container_id_tag false
+    container_id_attr container_id
+  ]
 
   def create_driver(conf = CONFIG, tag = 'test')
     Fluent::Test::FilterTestDriver.new(Fluent::MesosphereFilter, tag).configure(conf)
@@ -31,9 +35,9 @@ class AmplifierFilterTest < Test::Unit::TestCase
       .to_return(status: 200, body: file, headers: {})
   end
 
-  def setup_marathon_container
-    docker_api_url = 'http://tcp//example.com:5422/v1.16/containers/foobar123/json'
-    file = File.open('test/containers/marathon.json', 'rb')
+  def setup_marathon_container(container_id, file_name)
+    docker_api_url = "http://tcp//example.com:5422/v1.16/containers/#{container_id}/json"
+    file = File.open("test/containers/#{file_name}.json", 'rb')
     setup_docker_stub(file, docker_api_url)
   end
 
@@ -44,7 +48,7 @@ class AmplifierFilterTest < Test::Unit::TestCase
   end
 
   def test_marathon_filter
-    setup_marathon_container
+    setup_marathon_container('foobar123', 'marathon')
 
     d1 = create_driver(CONFIG, 'docker.foobar123')
     d1.run do
@@ -62,7 +66,7 @@ class AmplifierFilterTest < Test::Unit::TestCase
   end
 
   def test_container_cache
-    setup_marathon_container
+    setup_marathon_container('foobar123', 'marathon')
 
     d1 = create_driver(CONFIG, 'docker.foobar123')
     d1.run do
@@ -77,7 +81,7 @@ class AmplifierFilterTest < Test::Unit::TestCase
   end
 
   def test_container_cache_expiration
-    setup_marathon_container
+    setup_marathon_container('foobar123', 'marathon')
 
     d1 = create_driver(CONFIG2, 'docker.foobar123')
     d1.run do
@@ -162,5 +166,22 @@ class AmplifierFilterTest < Test::Unit::TestCase
 
     assert_equal bad_json1, filtered[0][2]['log']
     assert_equal bad_json2, filtered[1][2]['log']
+  end
+
+  def test_container_id_from_record
+    setup_marathon_container('somecontainer123', 'marathon2')
+
+    d1 = create_driver(CONFIG3, 'docker')
+    d1.run do
+      d1.filter('log' => 'hello_world', 'container_id' => 'somecontainer123')
+    end
+    filtered = d1.filtered_as_array
+
+    task_id = 'hello-world.14b0596d-93ea-11e5-a134-124eefe69197'
+    log_entry = filtered[0][2]
+
+    assert_equal 'marathon', log_entry['mesos_framework']
+    assert_equal 'hello-world', log_entry['app']
+    assert_equal task_id, log_entry['mesos_task_id']
   end
 end

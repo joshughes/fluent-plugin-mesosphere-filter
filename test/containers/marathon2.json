@@ -1,0 +1,187 @@
+{
+  "Id": "somecontainer123",
+  "Created": "2015-11-26T06:57:56.560006039Z",
+  "Path": "/bin/sh",
+  "Args": [
+    "-c",
+    "exec fluentd -c /fluentd/etc/$FLUENTD_CONF -p /fluentd/plugins $FLUENTD_OPT"
+  ],
+  "State": {
+    "Status": "running",
+    "Running": true,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 6563,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2015-11-26T07:00:45.707356204Z",
+    "FinishedAt": "2015-11-26T07:00:43.278299772Z"
+  },
+  "Image": "7cd5efd43c5097c8e6a9b6bdc050f887e0e1dee49a79b7eb920e2d741c36b3b5",
+  "ResolvConfPath": "/mnt/sda1/var/lib/docker/containers/110e3bd749e33e3b55bb55bec44a192457d722607afb1e6423e6a45a1c1e8b45/resolv.conf",
+  "HostnamePath": "/mnt/sda1/var/lib/docker/containers/110e3bd749e33e3b55bb55bec44a192457d722607afb1e6423e6a45a1c1e8b45/hostname",
+  "HostsPath": "/mnt/sda1/var/lib/docker/containers/110e3bd749e33e3b55bb55bec44a192457d722607afb1e6423e6a45a1c1e8b45/hosts",
+  "LogPath": "/mnt/sda1/var/lib/docker/containers/110e3bd749e33e3b55bb55bec44a192457d722607afb1e6423e6a45a1c1e8b45/110e3bd749e33e3b55bb55bec44a192457d722607afb1e6423e6a45a1c1e8b45-json.log",
+  "Name": "/fluentddockertest_fluentd_server_1",
+  "RestartCount": 0,
+  "Driver": "aufs",
+  "ExecDriver": "native-0.2",
+  "MountLabel": "",
+  "ProcessLabel": "",
+  "AppArmorProfile": "",
+  "ExecIDs": null,
+  "HostConfig": {
+    "Binds": [
+      "/Users/A658307/fluentd_docker_test/fluentd/etc:/fluentd/etc:rw",
+      "/Users/A658307/fluentd_docker_test/fluentd/logs:/fluentd/log:rw",
+      "/Users/A658307/fluentd_docker_test/fluentd/plugins:/fluentd/plugins:rw"
+    ],
+    "ContainerIDFile": "",
+    "LxcConf": null,
+    "Memory": 0,
+    "MemoryReservation": 0,
+    "MemorySwap": 0,
+    "KernelMemory": 0,
+    "CpuShares": 0,
+    "CpuPeriod": 0,
+    "CpusetCpus": "",
+    "CpusetMems": "",
+    "CpuQuota": 0,
+    "BlkioWeight": 0,
+    "OomKillDisable": false,
+    "MemorySwappiness": null,
+    "Privileged": false,
+    "PortBindings": {
+      "24224/tcp": [{
+        "HostIp": "",
+        "HostPort": "24224"
+      }]
+    },
+    "Links": null,
+    "PublishAllPorts": false,
+    "Dns": null,
+    "DnsOptions": null,
+    "DnsSearch": null,
+    "ExtraHosts": [],
+    "VolumesFrom": [],
+    "Devices": null,
+    "NetworkMode": "default",
+    "IpcMode": "",
+    "PidMode": "",
+    "UTSMode": "",
+    "CapAdd": null,
+    "CapDrop": null,
+    "GroupAdd": null,
+    "RestartPolicy": {
+      "Name": "",
+      "MaximumRetryCount": 0
+    },
+    "SecurityOpt": null,
+    "ReadonlyRootfs": false,
+    "Ulimits": null,
+    "LogConfig": {
+      "Type": "json-file",
+      "Config": {}
+    },
+    "CgroupParent": "",
+    "ConsoleSize": [
+      0,
+      0
+    ],
+    "VolumeDriver": ""
+  },
+  "GraphDriver": {
+    "Name": "aufs",
+    "Data": null
+  },
+  "Volumes": {
+    "/fluentd/etc": "/Users/A658307/fluentd_docker_test/fluentd/etc",
+    "/fluentd/log": "/Users/A658307/fluentd_docker_test/fluentd/logs",
+    "/fluentd/plugins": "/Users/A658307/fluentd_docker_test/fluentd/plugins"
+  },
+  "VolumesRW": {
+    "/fluentd/etc": true,
+    "/fluentd/log": true,
+    "/fluentd/plugins": true
+  },
+  "Config": {
+    "Hostname": "110e3bd749e3",
+    "Domainname": "",
+    "User": "ubuntu",
+    "AttachStdin": false,
+    "AttachStdout": false,
+    "AttachStderr": false,
+    "Tty": false,
+    "OpenStdin": false,
+    "StdinOnce": false,
+    "Env": [
+      "FLUENTD_OPT=-vv",
+      "MESOS_TASK_ID=hello-world.14b0596d-93ea-11e5-a134-124eefe69197",
+      "MARATHON_APP_ID=/hello-world",
+      "FLUENTD_CONF=test.conf",
+      "PATH=/home/ubuntu/ruby/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+      "FLUENTD_OPT="
+    ],
+    "Cmd": [
+      "/bin/sh",
+      "-c",
+      "exec fluentd -c /fluentd/etc/$FLUENTD_CONF -p /fluentd/plugins $FLUENTD_OPT"
+    ],
+    "Image": "fluent/fluentd:latest",
+    "Volumes": {
+      "/fluentd/etc": {},
+      "/fluentd/log": {},
+      "/fluentd/plugins": {}
+    },
+    "WorkingDir": "/home/ubuntu",
+    "Entrypoint": null,
+    "OnBuild": null,
+    "Labels": {
+      "Description": "Fluentd docker image",
+      "Vendor": "Fluent Organization",
+      "Version": "1.0",
+      "com.docker.compose.config-hash": "7a03ce1e88388255c166fa62dcad89a43d43034ce605265094cf9c9951dcc9f0",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "fluentddockertest",
+      "com.docker.compose.service": "fluentd_server",
+      "com.docker.compose.version": "1.5.1"
+    },
+    "MacAddress": "",
+    "NetworkDisabled": false,
+    "ExposedPorts": {
+      "24224/tcp": {}
+    },
+    "VolumeDriver": "",
+    "Memory": 0,
+    "MemorySwap": 0,
+    "CpuShares": 0,
+    "Cpuset": ""
+  },
+  "NetworkSettings": {
+    "Bridge": "",
+    "SandboxID": "f304aa3b0e20fe1e0edb5984aedd03b7d5df999ff5ff9bd3ef8f831923e5f96a",
+    "HairpinMode": false,
+    "LinkLocalIPv6Address": "",
+    "LinkLocalIPv6PrefixLen": 0,
+    "Ports": {
+      "24224/tcp": [{
+        "HostIp": "0.0.0.0",
+        "HostPort": "24224"
+      }]
+    },
+    "SandboxKey": "/var/run/docker/netns/f304aa3b0e20",
+    "SecondaryIPAddresses": null,
+    "SecondaryIPv6Addresses": null,
+    "EndpointID": "7c6889977686db7c2b2042798b021a03df61c4273dcfd84fb2a9e5830fcb71a9",
+    "Gateway": "172.17.0.1",
+    "GlobalIPv6Address": "",
+    "GlobalIPv6PrefixLen": 0,
+    "IPAddress": "172.17.0.2",
+    "IPPrefixLen": 16,
+    "IPv6Gateway": "",
+    "MacAddress": "02:42:ac:11:00:02"
+  }
+}

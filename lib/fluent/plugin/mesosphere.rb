@@ -23,6 +23,8 @@ module Fluent
 
     config_param :cache_size, :integer, default: 1000
     config_param :cache_ttl, :integer, default: 60 * 60
+    config_param :get_container_id_tag, :bool, default: true
+    config_param :container_id_attr, :string, default: 'container_id'
 
     config_param :merge_json_log, :bool, default: true
     config_param :cronos_task_regex,
@@ -56,12 +58,12 @@ module Fluent
     def filter_stream(tag, es)
       new_es = MultiEventStream.new
 
-      container_id = tag.split('.').last
-      mesos_data = @cache.getset(container_id) do
-        get_container_metadata(container_id)
-      end
-
       es.each do |time, record|
+        container_id = get_container_id(tag, record)
+        next unless container_id
+        mesos_data = @cache.getset(container_id) do
+          get_container_metadata(container_id)
+        end
         record = record.merge(mesos_data)
         record = merge_json_log(record) if @merge_json_log
         new_es.add(time, record)
@@ -99,6 +101,21 @@ module Fluent
         end
       end
       task_data
+    end
+
+    # Gets the container id from the last element in the tag. If the user has
+    # configured container_id_attr the container id can be gathered from the
+    # record if it has been inserted there.
+    #
+    # ==== Attributes
+    # * +tag+ - The tag of the log being processed
+    # * +record+ - The record that is being transformed by the filter
+    def get_container_id(tag, record)
+      if @get_container_id_tag
+        tag.split('.').last
+      else
+        record[@container_id_attr]
+      end
     end
 
     # Split the env var on = and return the value
