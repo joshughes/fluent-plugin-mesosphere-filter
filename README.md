@@ -46,7 +46,7 @@ If your using the docker fluentd logging plugin your configuration should look s
 </source>
 
 <filter docker.*>
-  type mesosphere-filter
+  type mesosphere_filter
   cache_size 1000
   cache_ttl 3600
   merge_json_log true

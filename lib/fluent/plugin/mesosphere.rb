@@ -19,7 +19,7 @@ module Fluent
   # Parses Marathon and Chronos data from docker to make fluentd logs more
   # useful.
   class MesosphereFilter < Fluent::Filter
-    Fluent::Plugin.register_filter('mesosphere-filter', self)
+    Fluent::Plugin.register_filter('mesosphere_filter', self)
 
     config_param :cache_size, :integer, default: 1000
     config_param :cache_ttl, :integer, default: 60 * 60
