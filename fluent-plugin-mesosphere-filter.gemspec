@@ -24,7 +24,6 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'lru_redux', '~> 1.1'
   gem.add_runtime_dependency 'docker-api', '~> 1.23'
 
-  gem.add_development_dependency 'fluentd', '~> 0.12'
   gem.add_development_dependency 'bundler', '~> 1.3'
   gem.add_development_dependency 'codeclimate-test-reporter'
   gem.add_development_dependency 'rake'
