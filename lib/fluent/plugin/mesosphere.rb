@@ -37,7 +37,6 @@ module Fluent
 
       require 'docker-api'
       require 'lru_redux'
-      require 'oj'
 
       @cache_ttl = :none if @cache_ttl < 0
 
@@ -178,8 +177,8 @@ module Fluent
         log = record['log'].strip
         if log[0].eql?('{') && log[-1].eql?('}')
           begin
-            record = Oj.load(log).merge(record)
-          rescue Oj::ParseError
+            record = JSON.parse(log).merge(record)
+          rescue JSON::ParserError
           end
         end
       end
