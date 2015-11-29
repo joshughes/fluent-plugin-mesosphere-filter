@@ -45,7 +45,7 @@ else
   $log = nulllogger
 end
 Docker.url = 'tcp://example.com:5422'
-require 'fluent/plugin/mesosphere'
+require 'fluent/plugin/filter_mesosphere_filter'
 
 class Test::Unit::TestCase
 end
