@@ -168,6 +168,19 @@ class AmplifierFilterTest < Test::Unit::TestCase
     assert_equal bad_json2, filtered[1][2]['log']
   end
 
+  def test_nested_json
+    setup_chronos_container
+    nested_json = '{"test_key":{"Hello World": "badnews"}}'
+
+    d1 = create_driver(CONFIG, 'docker.foobar124')
+    d1.run do
+      d1.filter('log' => nested_json)
+    end
+    filtered = d1.filtered_as_array
+
+    assert_equal '{"Hello World"=>"badnews"}', filtered[0][2]['test_key'].to_s
+  end
+
   def test_container_id_from_record
     setup_marathon_container('somecontainer123', 'marathon2')
 
