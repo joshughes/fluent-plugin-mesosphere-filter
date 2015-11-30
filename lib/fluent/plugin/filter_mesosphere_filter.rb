@@ -29,7 +29,7 @@ module Fluent
     config_param :merge_json_log, :bool, default: true
     config_param :cronos_task_regex,
                  :string,
-                 default: '(?<app>[a-z0-9]([-a-z0-9_]*[a-z0-9_]))-(?<date>[^-]+)-(?<time>[^-]+)-(?<task_type>[^-]+)-(?<run>[^-]+)-(?<epoc>[^-]+)'
+                 default: '^(?<app>[a-z0-9]([-a-z0-9.]*[a-z0-9]))-(?<date>[^-]+)-(?<time>[^-]+)-(?<task_type>[^-]+)-(?<run>[^-]+)-(?<epoc>[^-]+)$'
 
     # Get the configuration for the plugin
     def configure(conf)
@@ -45,7 +45,7 @@ module Fluent
 
       @chronos_task_regex_compiled = Regexp.compile(@cronos_task_regex)
 
-      marathon_regex = '\/(?<app>[a-z0-9]([-a-z0-9_]*[a-z0-9_]))'
+      marathon_regex = '\/(?<app>[a-z0-9]([-a-z0-9_.]*[a-z0-9_.]))'
       @marathon_app_regex_compiled = Regexp.compile(marathon_regex)
     end
 
