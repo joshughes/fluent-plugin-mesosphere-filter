@@ -30,7 +30,7 @@ module Fluent
     config_param :merge_json_log, :bool, default: true
     config_param :cronos_task_regex,
                  :string,
-                 default: '^(?<app>[a-z0-9]([-a-z0-9.]*[a-z0-9]))-(?<date>[^-]+)-(?<time>[^-]+)-(?<task_type>[^-]+)-(?<run>[^-]+)-(?<epoc>[^-]+)$'
+                 default: '^(?<app>[a-z0-9]([-a-z0-9.]*[a-z0-9]))-(?<task_type>[^-]+)-(?<run>[^-]+)-(?<epoc>[^-]+)$'
 
     # Get the configuration for the plugin
     def configure(conf)

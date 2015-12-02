@@ -134,7 +134,7 @@ class AmplifierFilterTest < Test::Unit::TestCase
     log_entry = filtered[0][2]
 
     assert_equal 'chronos', log_entry['mesos_framework']
-    assert_equal 'some-task-app2', log_entry['app']
+    assert_equal 'some-task-app2-11182015-1718', log_entry['app']
     assert_equal task_id, log_entry['mesos_task_id']
     assert_equal 'deployTasks', log_entry['chronos_task_type']
   end
