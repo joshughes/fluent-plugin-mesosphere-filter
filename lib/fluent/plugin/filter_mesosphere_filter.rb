@@ -26,6 +26,7 @@ module Fluent
     config_param :get_container_id_tag, :bool, default: true
     config_param :container_id_attr, :string, default: 'container_id'
 
+    config_param :timestamp_key, :string, default: '@timestamp'
     config_param :merge_json_log, :bool, default: true
     config_param :cronos_task_regex,
                  :string,
@@ -38,6 +39,7 @@ module Fluent
       require 'docker-api'
       require 'lru_redux'
       require 'oj'
+      require 'time'
 
       @cache_ttl = :none if @cache_ttl < 0
 
@@ -61,9 +63,21 @@ module Fluent
         container_id =
           get_container_id_from_record(record) if container_id.empty?
         next unless container_id
+        record[@timestamp_key] = generate_time_stamp(time)
         new_es.add(time, modify_record(record, get_mesos_data(container_id)))
       end
       new_es
+    end
+
+    # Generates a timestamp that the elasticsearch plugin can understand.
+    #
+    # ==== Attributes:
+    # * +time+ - A time record from the event stream
+    # ==== Returns:
+    # * A string with the correct datatime format for the elasticsearch plugin
+    #   to consume
+    def generate_time_stamp(time)
+      Time.at(time).utc.strftime('%Y-%m-%dT%H:%M:%S%z')
     end
 
     # Injects the meso framework data into the record and also merges
