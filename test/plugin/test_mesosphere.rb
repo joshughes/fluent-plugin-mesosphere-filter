@@ -65,26 +65,6 @@ class AmplifierFilterTest < Test::Unit::TestCase
     assert_equal task_id, log_entry['mesos_task_id']
   end
 
-  def test_timestamp
-    setup_marathon_container('foobar123', 'marathon')
-    time_string = ''
-    filtered = {}
-    Timecop.freeze(Time.now) do
-      d1 = create_driver(CONFIG, 'docker.foobar123')
-      d1.run do
-        1000.times do
-          d1.filter('log' => 'Hello World 4')
-        end
-      end
-      time_string = Time.now.utc.strftime('%Y-%m-%dT%H:%M:%S%z')
-      filtered = d1.filtered_as_array
-    end
-
-    log_entry = filtered[0][2]
-
-    assert_equal time_string, log_entry['@timestamp']
-  end
-
   def test_container_cache
     setup_marathon_container('foobar123', 'marathon')
 
