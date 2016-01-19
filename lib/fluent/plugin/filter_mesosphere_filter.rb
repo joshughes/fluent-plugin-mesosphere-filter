@@ -25,6 +25,7 @@ module Fluent
     config_param :cache_ttl, :integer, default: 60 * 60
     config_param :get_container_id_tag, :bool, default: true
     config_param :container_id_attr, :string, default: 'container_id'
+    config_param :namespace_env_var, :string, default: nil
 
     config_param :merge_json_log, :bool, default: true
     config_param :cronos_task_regex,
@@ -122,6 +123,8 @@ module Fluent
             task_data['mesos_framework'] = 'chronos'
             task_data['app'] = match_data['app'] if match_data
             task_data['chronos_task_type'] = match_data['task_type'] if match_data
+          elsif @namespace_env_var && env.include?(@namespace_env_var)
+            task_data['namespace'] = parse_env(env)
           end
         end
       end
@@ -165,7 +168,8 @@ module Fluent
     end
 
     # Look at the log value and if it is valid json then we will parse the json
-    # and merge it into the log record.
+    # and merge it into the log record.  If a namespace is present then the log
+    # record is placed under that key.
     # ==== Attributes:
     # * +record+ - The record we are transforming in the fluentd event stream.
     # ==== Examples
@@ -177,9 +181,15 @@ module Fluent
     def merge_json_log(record)
       if record.key?('log')
         log = record['log'].strip
+        namespace = record['namespace']
         if log[0].eql?('{') && log[-1].eql?('}')
           begin
-            record = Oj.load(log).merge(record)
+            log_json = Oj.load(log)
+            if namespace
+              record[namespace] = log_json
+            else
+              record = log_json.merge(record)
+            end  
           rescue Oj::ParseError
           end
         end
