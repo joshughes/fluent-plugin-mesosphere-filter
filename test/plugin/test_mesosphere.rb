@@ -165,6 +165,7 @@ class AmplifierFilterTest < Test::Unit::TestCase
     filtered = d1.filtered_as_array
     log_entry = filtered[0][2]
 
+    assert_equal 'ns', log_entry['namespace']
     assert_equal 'Hello World', log_entry['ns']['test_key']
   end
 
