@@ -29,7 +29,8 @@
       "YEAR=2016",
       "VAULT_HOSTS=https://dev-use1a-pr-01-vault-vault-0001.dev-utopia.com:8200,https://dev-use1b-pr-01-vault-vault-0001.dev-utopia.com:8200,https://dev-use1e-pr-01-vault-vault-0001.dev-utopia.com:8200",
       "MESOS_SANDBOX=/mnt/mesos/sandbox",
-      "PORT=80"
+      "PORT=80",
+      "NAMESPACE=ns"
     ],
     "ExposedPorts": {
       "80/tcp": {}

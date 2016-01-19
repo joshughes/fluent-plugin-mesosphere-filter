@@ -25,7 +25,7 @@ module Fluent
     config_param :cache_ttl, :integer, default: 60 * 60
     config_param :get_container_id_tag, :bool, default: true
     config_param :container_id_attr, :string, default: 'container_id'
-    config_param :namespace_attr, :string, default: 'namespace'
+    config_param :namespace_env_var, :string, default: nil
 
     config_param :merge_json_log, :bool, default: true
     config_param :cronos_task_regex,
@@ -63,8 +63,7 @@ module Fluent
         container_id =
           get_container_id_from_record(record) if container_id.empty?
         next unless container_id
-        namespace = get_namespace_from_record(record)
-        new_es.add(time, modify_record(record, get_mesos_data(container_id), namespace))
+        new_es.add(time, modify_record(record, get_mesos_data(container_id)))
       end
       new_es
     end
@@ -78,9 +77,9 @@ module Fluent
     #
     # ==== Returns:
     # * A record hash that has mesos data and optinally log data added
-    def modify_record(record, mesos_data, namespace = nil)
+    def modify_record(record, mesos_data)
       modified_record = record.merge(mesos_data)
-      modified_record = merge_json_log(modified_record, namespace) if @merge_json_log
+      modified_record = merge_json_log(modified_record) if @merge_json_log
       modified_record
     end
 
@@ -124,6 +123,8 @@ module Fluent
             task_data['mesos_framework'] = 'chronos'
             task_data['app'] = match_data['app'] if match_data
             task_data['chronos_task_type'] = match_data['task_type'] if match_data
+          elsif @namespace_env_var && env.include?(@namespace_env_var)
+            task_data['namespace'] = parse_env(env)
           end
         end
       end
@@ -154,18 +155,6 @@ module Fluent
       record[@container_id_attr]
     end
 
-    # If the user has configured namespace_attr the record namespace can be
-    # gathered from the record if it has been inserted there. If no namespace
-    # can be found, the record is not namespaced.
-    #
-    # ==== Attributes::
-    # * +record+ - The record that is being transformed by the filter
-    # ==== Returns:
-    # * A namespace
-    def get_namespace_from_record(record)
-      record[@namespace_attr]
-    end
-
     # Split the env var on = and return the value
     # ==== Attributes:
     # * +env+ - The docker environment variable to parse to get the value.
@@ -189,9 +178,10 @@ module Fluent
     # # will parse the json and add the keys and values to the record.
     # ==== Returns:
     # * A record hash that has json log data merged into the record
-    def merge_json_log(record, namespace = nil)
+    def merge_json_log(record)
       if record.key?('log')
         log = record['log'].strip
+        namespace = record['namespace']
         if log[0].eql?('{') && log[-1].eql?('}')
           begin
             log_json = Oj.load(log)

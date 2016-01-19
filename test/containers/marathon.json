@@ -122,7 +122,8 @@
       "MARATHON_APP_ID=/hello-world",
       "FLUENTD_CONF=test.conf",
       "PATH=/home/ubuntu/ruby/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
-      "FLUENTD_OPT="
+      "FLUENTD_OPT=",
+      "NAMESPACE=ns"
     ],
     "Cmd": [
       "/bin/sh",

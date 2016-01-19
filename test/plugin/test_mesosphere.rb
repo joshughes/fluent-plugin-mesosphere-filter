@@ -25,6 +25,9 @@ class AmplifierFilterTest < Test::Unit::TestCase
     get_container_id_tag false
     container_id_attr container_id
   ]
+  CONFIG4 = %[
+    namespace_env_var NAMESPACE
+  ]
 
   def create_driver(conf = CONFIG, tag = 'test')
     Fluent::Test::FilterTestDriver.new(Fluent::MesosphereFilter, tag).configure(conf)
@@ -155,9 +158,9 @@ class AmplifierFilterTest < Test::Unit::TestCase
   def test_merge_json_with_namespace
     setup_chronos_container
 
-    d1 = create_driver(CONFIG, 'docker.foobar124')
+    d1 = create_driver(CONFIG4, 'docker.foobar124')
     d1.run do
-      d1.filter('log' => '{"test_key":"Hello World"}', 'namespace' => 'ns')
+      d1.filter('log' => '{"test_key":"Hello World"}')
     end
     filtered = d1.filtered_as_array
     log_entry = filtered[0][2]
@@ -179,6 +182,24 @@ class AmplifierFilterTest < Test::Unit::TestCase
 
     assert_equal bad_json1, filtered[0][2]['log']
     assert_equal bad_json2, filtered[1][2]['log']
+  end
+
+  def test_bad_merge_json_with_namespace
+    setup_chronos_container
+    bad_json1 = '{"test_key":"Hello World"'
+    bad_json2 = '{"test_key":"Hello World", "badnews"}'
+
+    d1 = create_driver(CONFIG4, 'docker.foobar124')
+    d1.run do
+      d1.filter('log' => bad_json1)
+      d1.filter('log' => bad_json2)
+    end
+    filtered = d1.filtered_as_array
+
+    assert_equal bad_json1, filtered[0][2]['log']
+    assert_equal bad_json2, filtered[1][2]['log']
+    assert_equal false, filtered[0][2].key?('ns')
+    assert_equal false, filtered[1][2].key?('ns')
   end
 
   def test_container_id_from_record
