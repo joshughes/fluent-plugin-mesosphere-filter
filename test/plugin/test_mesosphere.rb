@@ -152,6 +152,19 @@ class AmplifierFilterTest < Test::Unit::TestCase
     assert_equal 'Hello World', log_entry['test_key']
   end
 
+  def test_merge_json_with_namespace
+    setup_chronos_container
+
+    d1 = create_driver(CONFIG, 'docker.foobar124')
+    d1.run do
+      d1.filter('log' => '{"test_key":"Hello World"}', 'namespace' => 'ns')
+    end
+    filtered = d1.filtered_as_array
+    log_entry = filtered[0][2]
+
+    assert_equal 'Hello World', log_entry['ns']['test_key']
+  end
+
   def test_bad_merge_json
     setup_chronos_container
     bad_json1 = '{"test_key":"Hello World"'

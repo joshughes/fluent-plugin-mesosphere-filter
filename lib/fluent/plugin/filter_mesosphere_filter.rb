@@ -25,6 +25,7 @@ module Fluent
     config_param :cache_ttl, :integer, default: 60 * 60
     config_param :get_container_id_tag, :bool, default: true
     config_param :container_id_attr, :string, default: 'container_id'
+    config_param :namespace_attr, :string, default: 'namespace'
 
     config_param :merge_json_log, :bool, default: true
     config_param :cronos_task_regex,
@@ -62,7 +63,8 @@ module Fluent
         container_id =
           get_container_id_from_record(record) if container_id.empty?
         next unless container_id
-        new_es.add(time, modify_record(record, get_mesos_data(container_id)))
+        namespace = get_namespace_from_record(record)
+        new_es.add(time, modify_record(record, get_mesos_data(container_id), namespace))
       end
       new_es
     end
@@ -76,9 +78,9 @@ module Fluent
     #
     # ==== Returns:
     # * A record hash that has mesos data and optinally log data added
-    def modify_record(record, mesos_data)
+    def modify_record(record, mesos_data, namespace = nil)
       modified_record = record.merge(mesos_data)
-      modified_record = merge_json_log(modified_record) if @merge_json_log
+      modified_record = merge_json_log(modified_record, namespace) if @merge_json_log
       modified_record
     end
 
@@ -152,6 +154,18 @@ module Fluent
       record[@container_id_attr]
     end
 
+    # If the user has configured namespace_attr the record namespace can be
+    # gathered from the record if it has been inserted there. If no namespace
+    # can be found, the record is not namespaced.
+    #
+    # ==== Attributes::
+    # * +record+ - The record that is being transformed by the filter
+    # ==== Returns:
+    # * A namespace
+    def get_namespace_from_record(record)
+      record[@namespace_attr]
+    end
+
     # Split the env var on = and return the value
     # ==== Attributes:
     # * +env+ - The docker environment variable to parse to get the value.
@@ -165,7 +179,8 @@ module Fluent
     end
 
     # Look at the log value and if it is valid json then we will parse the json
-    # and merge it into the log record.
+    # and merge it into the log record.  If a namespace is present then the log
+    # record is placed under that key.
     # ==== Attributes:
     # * +record+ - The record we are transforming in the fluentd event stream.
     # ==== Examples
@@ -174,12 +189,17 @@ module Fluent
     # # will parse the json and add the keys and values to the record.
     # ==== Returns:
     # * A record hash that has json log data merged into the record
-    def merge_json_log(record)
+    def merge_json_log(record, namespace = nil)
       if record.key?('log')
         log = record['log'].strip
         if log[0].eql?('{') && log[-1].eql?('}')
           begin
-            record = Oj.load(log).merge(record)
+            log_json = Oj.load(log)
+            if namespace
+              record[namespace] = log_json
+            else
+              record = log_json.merge(record)
+            end  
           rescue Oj::ParseError
           end
         end
