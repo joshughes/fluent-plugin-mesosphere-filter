@@ -187,6 +187,7 @@ module Fluent
             log_json = Oj.load(log)
             if namespace
               record[namespace] = log_json
+              record.delete('log')
             else
               record = log_json.merge(record)
             end  
