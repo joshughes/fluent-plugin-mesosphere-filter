@@ -31,6 +31,9 @@ module Fluent
     config_param :cronos_task_regex,
                  :string,
                  default: '^(?<app>[a-z0-9]([-a-z0-9.]*[a-z0-9]))-(?<task_type>[^-]+)-(?<run>[^-]+)-(?<epoc>[^-]+)$'
+    config_param :marathon_app_regex,
+                 :string,
+                 default: '\/(?<app>[a-z0-9]([-a-z0-9_.]*[a-z0-9_.]))'
 
     # Get the configuration for the plugin
     def configure(conf)
@@ -47,8 +50,7 @@ module Fluent
 
       @chronos_task_regex_compiled = Regexp.compile(@cronos_task_regex)
 
-      marathon_regex = '\/(?<app>[a-z0-9]([-a-z0-9_.]*[a-z0-9_.]))'
-      @marathon_app_regex_compiled = Regexp.compile(marathon_regex)
+      @marathon_app_regex_compiled = Regexp.compile(@marathon_app_regex)
     end
 
     # Gets the log event stream and moifies it. This is where the plugin hooks
@@ -189,7 +191,7 @@ module Fluent
               record[namespace] = log_json
             else
               record = log_json.merge(record)
-            end  
+            end
           rescue Oj::ParseError
           end
         end
