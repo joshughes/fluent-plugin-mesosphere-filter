@@ -1,7 +1,6 @@
 language: ruby
 rvm:
-- 2.1.7
-- 1.9.3-p551
+- 2.2.5
 addons:
   code_climate:
     repo_token:
