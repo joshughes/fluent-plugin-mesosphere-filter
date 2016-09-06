@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |gem|
   gem.name          = 'fluent-plugin-mesosphere-filter'
-  gem.version       = '0.1.10'
+  gem.version       = '0.1.11'
   gem.authors       = ['Joseph Hughes']
   gem.email         = ['jjhughes57@gmail.com']
   gem.description   = 'Filter plugin to add Mesosphere metadata'
@@ -32,5 +32,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'pry'
   gem.add_development_dependency 'timecop'
   gem.add_development_dependency 'simplecov'
-  gem.add_development_dependency 'minitest', '~> 4.0'
+  gem.add_development_dependency 'test-unit'
+  gem.add_development_dependency 'minitest', '~> 5.0'
 end
