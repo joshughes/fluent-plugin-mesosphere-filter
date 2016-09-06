@@ -32,5 +32,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'pry'
   gem.add_development_dependency 'timecop'
   gem.add_development_dependency 'simplecov'
-  gem.add_development_dependency 'minitest', '~> 4.0'
+  gem.add_development_dependency 'minitest', '~> 5.0'
 end
