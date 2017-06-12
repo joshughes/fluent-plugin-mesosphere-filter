@@ -124,7 +124,7 @@ module Fluent
             match_data = parse_env(env).match(@chronos_task_regex_compiled)
             task_data['mesos_framework'] = 'chronos'
             task_data['app'] = match_data['app'] if match_data
-            task_data['chronos_task_type'] = match_data['task_type'] if match_data
+            task_data['chronos_task_type'] = match_data['task_type'] if match_data && match_data.names.include?('task_type')
           elsif @namespace_env_var && env.include?(@namespace_env_var)
             task_data['namespace'] = parse_env(env)
           end
