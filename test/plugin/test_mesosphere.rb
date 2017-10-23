@@ -39,13 +39,13 @@ class AmplifierFilterTest < Test::Unit::TestCase
   end
 
   def setup_marathon_container(container_id, file_name)
-    docker_api_url = "http://tcp//example.com:5422/v1.16/containers/#{container_id}/json"
+    docker_api_url = "https://example.com:5422/v1.16/containers/#{container_id}/json"
     file = File.open("test/containers/#{file_name}.json", 'rb')
     setup_docker_stub(file, docker_api_url)
   end
 
   def setup_chronos_container
-    docker_api_url = 'http://tcp//example.com:5422/v1.16/containers/foobar124/json'
+    docker_api_url = 'https://example.com:5422/v1.16/containers/foobar124/json'
     file = File.open('test/containers/chronos.json', 'rb')
     setup_docker_stub(file, docker_api_url)
   end
@@ -77,7 +77,7 @@ class AmplifierFilterTest < Test::Unit::TestCase
         d1.feed('log' => 'Hello World 4')
       end
     end
-    docker_api_url = 'http://tcp//example.com:5422/v1.16/containers/foobar123/json'
+    docker_api_url = 'https://example.com:5422/v1.16/containers/foobar123/json'
 
     assert_equal 1000, d1.filtered.length
     assert_requested(:get, docker_api_url, times: 2)
@@ -99,7 +99,7 @@ class AmplifierFilterTest < Test::Unit::TestCase
 
     Timecop.return
 
-    docker_api_url = 'http://tcp//example.com:5422/v1.16/containers/foobar123/json'
+    docker_api_url = 'https://example.com:5422/v1.16/containers/foobar123/json'
 
     assert_requested(:get, docker_api_url, times: 4)
   end
@@ -123,7 +123,7 @@ class AmplifierFilterTest < Test::Unit::TestCase
   end
 
   def test_chronos_bad_match
-    docker_api_url = 'http://tcp//example.com:5422/v1.16/containers/foobar124/json'
+    docker_api_url = 'https://example.com:5422/v1.16/containers/foobar124/json'
     file = File.open('test/containers/chronos_bad.json', 'rb')
     setup_docker_stub(file, docker_api_url)
 
