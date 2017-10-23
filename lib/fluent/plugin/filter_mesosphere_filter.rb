@@ -15,7 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module Fluent
+require 'fluent/plugin/filter'
+
+module Fluent::Plugin
   # Parses Marathon and Chronos data from docker to make fluentd logs more
   # useful.
   class MesosphereFilter < Filter
@@ -56,7 +58,7 @@ module Fluent
     # Gets the log event stream and moifies it. This is where the plugin hooks
     # into the fluentd envent stream.
     def filter_stream(tag, es)
-      new_es = MultiEventStream.new
+      new_es = Fluent::MultiEventStream.new
       container_id = ''
 
       container_id = get_container_id_from_tag(tag) if get_container_id_tag
