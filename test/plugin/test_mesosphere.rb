@@ -29,8 +29,8 @@ class AmplifierFilterTest < Test::Unit::TestCase
     namespace_env_var NAMESPACE
   ]
 
-  def create_driver(conf = CONFIG, tag = 'test')
-    Fluent::Test::FilterTestDriver.new(Fluent::MesosphereFilter, tag).configure(conf)
+  def create_driver(conf = CONFIG)
+    Fluent::Test::Driver::Filter.new(Fluent::Plugin::MesosphereFilter).configure(conf)
   end
 
   def setup_docker_stub(file, docker_api_url)
@@ -53,15 +53,15 @@ class AmplifierFilterTest < Test::Unit::TestCase
   def test_marathon_filter
     setup_marathon_container('foobar123', 'marathon')
 
-    d1 = create_driver(CONFIG, 'docker.foobar123')
-    d1.run do
-      d1.filter('log' => 'Hello World 1')
+    d1 = create_driver(CONFIG)
+    d1.run(default_tag:  'docker.foobar123') do
+      d1.feed('log' => 'Hello World 1')
     end
-    filtered = d1.filtered_as_array
+    filtered = d1.filtered
 
     task_id = 'hello-world.14b0596d-93ea-11e5-a134-124eefe69197'
 
-    log_entry = filtered[0][2]
+    log_entry = filtered[0][1]
 
     assert_equal 'marathon', log_entry['mesos_framework']
     assert_equal 'hello-world', log_entry['app']
@@ -71,30 +71,30 @@ class AmplifierFilterTest < Test::Unit::TestCase
   def test_container_cache
     setup_marathon_container('foobar123', 'marathon')
 
-    d1 = create_driver(CONFIG, 'docker.foobar123')
-    d1.run do
+    d1 = create_driver(CONFIG)
+    d1.run(default_tag: 'docker.foobar123') do
       1000.times do
-        d1.filter('log' => 'Hello World 4')
+        d1.feed('log' => 'Hello World 4')
       end
     end
     docker_api_url = 'http://tcp//example.com:5422/v1.16/containers/foobar123/json'
 
-    assert_equal 1000, d1.filtered_as_array.length
+    assert_equal 1000, d1.filtered.length
     assert_requested(:get, docker_api_url, times: 2)
   end
 
   def test_container_cache_expiration
     setup_marathon_container('foobar123', 'marathon')
 
-    d1 = create_driver(CONFIG2, 'docker.foobar123')
-    d1.run do
-      d1.filter('log' => 'Hello World 4')
+    d1 = create_driver(CONFIG2)
+    d1.run(default_tag: 'docker.foobar123') do
+      d1.feed('log' => 'Hello World 4')
     end
 
     Timecop.travel(Time.now + 10 * 60)
 
-    d1.run do
-      d1.filter('log' => 'Hello World 4')
+    d1.run(default_tag: 'docker.foobar123') do
+      d1.feed('log' => 'Hello World 4')
     end
 
     Timecop.return
@@ -107,14 +107,14 @@ class AmplifierFilterTest < Test::Unit::TestCase
   def test_chronos_filter
     setup_chronos_container
 
-    d1 = create_driver(CONFIG, 'docker.foobar124')
-    d1.run do
-      d1.filter('log' => 'Hello World 1')
+    d1 = create_driver(CONFIG)
+    d1.run(default_tag: 'docker.foobar124') do
+      d1.feed('log' => 'Hello World 1')
     end
-    filtered = d1.filtered_as_array
+    filtered = d1.filtered
 
     task_id = 'ct:1448508194000:0:recurring-transaction2:task'
-    log_entry = filtered[0][2]
+    log_entry = filtered[0][1]
 
     assert_equal 'chronos', log_entry['mesos_framework']
     assert_equal 'some-task-app2-11182015-1718', log_entry['app']
@@ -127,14 +127,14 @@ class AmplifierFilterTest < Test::Unit::TestCase
     file = File.open('test/containers/chronos_bad.json', 'rb')
     setup_docker_stub(file, docker_api_url)
 
-    d1 = create_driver(CONFIG, 'docker.foobar124')
-    d1.run do
-      d1.filter('log' => 'Hello World 1')
+    d1 = create_driver(CONFIG)
+    d1.run(default_tag: 'docker.foobar124') do
+      d1.feed('log' => 'Hello World 1')
     end
-    filtered = d1.filtered_as_array
+    filtered = d1.filtered
 
     task_id = 'ct:1448508194000:0:recurring-transaction3:task'
-    log_entry = filtered[0][2]
+    log_entry = filtered[0][1]
 
     assert_equal 'chronos', log_entry['mesos_framework']
     assert_equal task_id, log_entry['mesos_task_id']
@@ -145,12 +145,12 @@ class AmplifierFilterTest < Test::Unit::TestCase
   def test_merge_json
     setup_chronos_container
 
-    d1 = create_driver(CONFIG, 'docker.foobar124')
-    d1.run do
-      d1.filter('log' => '{"test_key":"Hello World"}')
+    d1 = create_driver(CONFIG)
+    d1.run(default_tag: 'docker.foobar124') do
+      d1.feed('log' => '{"test_key":"Hello World"}')
     end
-    filtered = d1.filtered_as_array
-    log_entry = filtered[0][2]
+    filtered = d1.filtered
+    log_entry = filtered[0][1]
 
     assert_equal 'Hello World', log_entry['test_key']
   end
@@ -158,12 +158,12 @@ class AmplifierFilterTest < Test::Unit::TestCase
   def test_merge_json_with_namespace
     setup_chronos_container
 
-    d1 = create_driver(CONFIG4, 'docker.foobar124')
-    d1.run do
-      d1.filter('log' => '{"test_key":"Hello World"}')
+    d1 = create_driver(CONFIG4)
+    d1.run(default_tag: 'docker.foobar124') do
+      d1.feed('log' => '{"test_key":"Hello World"}')
     end
-    filtered = d1.filtered_as_array
-    log_entry = filtered[0][2]
+    filtered = d1.filtered
+    log_entry = filtered[0][1]
 
     assert_equal 'ns', log_entry['namespace']
     assert_equal 'Hello World', log_entry['ns']['test_key']
@@ -174,15 +174,15 @@ class AmplifierFilterTest < Test::Unit::TestCase
     bad_json1 = '{"test_key":"Hello World"'
     bad_json2 = '{"test_key":"Hello World", "badnews"}'
 
-    d1 = create_driver(CONFIG, 'docker.foobar124')
-    d1.run do
-      d1.filter('log' => bad_json1)
-      d1.filter('log' => bad_json2)
+    d1 = create_driver(CONFIG)
+    d1.run(default_tag: 'docker.foobar124') do
+      d1.feed('log' => bad_json1)
+      d1.feed('log' => bad_json2)
     end
-    filtered = d1.filtered_as_array
+    filtered = d1.filtered
 
-    assert_equal bad_json1, filtered[0][2]['log']
-    assert_equal bad_json2, filtered[1][2]['log']
+    assert_equal bad_json1, filtered[0][1]['log']
+    assert_equal bad_json2, filtered[1][1]['log']
   end
 
   def test_bad_merge_json_with_namespace
@@ -190,30 +190,30 @@ class AmplifierFilterTest < Test::Unit::TestCase
     bad_json1 = '{"test_key":"Hello World"'
     bad_json2 = '{"test_key":"Hello World", "badnews"}'
 
-    d1 = create_driver(CONFIG4, 'docker.foobar124')
-    d1.run do
-      d1.filter('log' => bad_json1)
-      d1.filter('log' => bad_json2)
+    d1 = create_driver(CONFIG4)
+    d1.run(default_tag: 'docker.foobar124') do
+      d1.feed('log' => bad_json1)
+      d1.feed('log' => bad_json2)
     end
-    filtered = d1.filtered_as_array
+    filtered = d1.filtered
 
-    assert_equal bad_json1, filtered[0][2]['log']
-    assert_equal bad_json2, filtered[1][2]['log']
-    assert_equal false, filtered[0][2].key?('ns')
-    assert_equal false, filtered[1][2].key?('ns')
+    assert_equal bad_json1, filtered[0][1]['log']
+    assert_equal bad_json2, filtered[1][1]['log']
+    assert_equal false, filtered[0][1].key?('ns')
+    assert_equal false, filtered[1][1].key?('ns')
   end
 
   def test_container_id_from_record
     setup_marathon_container('somecontainer123', 'marathon2')
 
-    d1 = create_driver(CONFIG3, 'docker')
-    d1.run do
-      d1.filter('log' => 'hello_world', 'container_id' => 'somecontainer123')
+    d1 = create_driver(CONFIG3)
+    d1.run(default_tag: 'docker') do
+      d1.feed('log' => 'hello_world', 'container_id' => 'somecontainer123')
     end
-    filtered = d1.filtered_as_array
+    filtered = d1.filtered
 
     task_id = 'hello-world.14b0596d-93ea-11e5-a134-124eefe69197'
-    log_entry = filtered[0][2]
+    log_entry = filtered[0][1]
 
     assert_equal 'marathon', log_entry['mesos_framework']
     assert_equal 'hello-world', log_entry['app']

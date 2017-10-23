@@ -15,7 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module Fluent
+require 'docker-api'
+require 'lru_redux'
+require 'oj'
+require 'time'
+require 'fluent/plugin/filter'
+
+module Fluent::Plugin
   # Parses Marathon and Chronos data from docker to make fluentd logs more
   # useful.
   class MesosphereFilter < Filter
@@ -39,11 +45,6 @@ module Fluent
     def configure(conf)
       super
 
-      require 'docker-api'
-      require 'lru_redux'
-      require 'oj'
-      require 'time'
-
       @cache_ttl = :none if @cache_ttl < 0
 
       @cache = LruRedux::TTL::ThreadSafeCache.new(@cache_size, @cache_ttl)
@@ -56,7 +57,7 @@ module Fluent
     # Gets the log event stream and moifies it. This is where the plugin hooks
     # into the fluentd envent stream.
     def filter_stream(tag, es)
-      new_es = MultiEventStream.new
+      new_es = Fluent::MultiEventStream.new
       container_id = ''
 
       container_id = get_container_id_from_tag(tag) if get_container_id_tag
